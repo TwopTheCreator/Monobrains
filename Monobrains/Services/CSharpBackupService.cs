@@ -2033,12 +2033,12 @@ namespace Monobrains.Services
 
         public async Task AddBreakpointAsync(int lineNumber)
         {
-            // Implementation for adding breakpoints
+
         }
 
         public async Task RemoveBreakpointAsync(int lineNumber)
         {
-            // Implementation for removing breakpoints
+            
         }
 
         public async Task<List<Variable>> GetVariablesAsync()
@@ -2052,3 +2052,4 @@ namespace Monobrains.Services
         }
     }
 }
+
