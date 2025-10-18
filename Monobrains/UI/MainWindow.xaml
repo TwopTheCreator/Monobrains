@@ -1,0 +1,312 @@
+<Window x:Class="Monobrains.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Monobrains IDE" Height="800" Width="1200"
+        WindowState="Maximized"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        DataContext="{Binding Source={StaticResource MainWindowViewModel}}">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <Style x:Key="ModernTabControlStyle" TargetType="TabControl" BasedOn="{StaticResource MaterialDesignTabControl}">
+            <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+        </Style>
+        
+        <Style x:Key="ModernEditorStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}"/>
+            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="AcceptsTab" Value="True"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Menu Bar -->
+        <Menu Grid.Row="0" Background="{DynamicResource MaterialDesignToolBarBackground}">
+            <MenuItem Header="_File" Style="{StaticResource ModernMenuItemStyle}">
+                <MenuItem Header="_New" Command="{Binding NewFileCommand}" InputGestureText="Ctrl+N"/>
+                <MenuItem Header="_Open" Command="{Binding OpenFileCommand}" InputGestureText="Ctrl+O"/>
+                <MenuItem Header="_Save" Command="{Binding SaveFileCommand}" InputGestureText="Ctrl+S"/>
+                <MenuItem Header="Save _As" Command="{Binding SaveAsFileCommand}" InputGestureText="Ctrl+Shift+S"/>
+                <Separator/>
+                <MenuItem Header="_New Project" Command="{Binding NewProjectCommand}"/>
+                <MenuItem Header="_Open Project" Command="{Binding OpenProjectCommand}"/>
+                <Separator/>
+                <MenuItem Header="E_xit" Click="Exit_Click"/>
+            </MenuItem>
+            
+            <MenuItem Header="_Edit" Style="{StaticResource ModernMenuItemStyle}">
+                <MenuItem Header="_Undo" InputGestureText="Ctrl+Z"/>
+                <MenuItem Header="_Redo" InputGestureText="Ctrl+Y"/>
+                <Separator/>
+                <MenuItem Header="_Cut" InputGestureText="Ctrl+X"/>
+                <MenuItem Header="_Copy" InputGestureText="Ctrl+C"/>
+                <MenuItem Header="_Paste" InputGestureText="Ctrl+V"/>
+                <Separator/>
+                <MenuItem Header="_Find" Command="{Binding FindReplaceCommand}" InputGestureText="Ctrl+F"/>
+                <MenuItem Header="_Replace" InputGestureText="Ctrl+H"/>
+                <MenuItem Header="_Go to Line" Command="{Binding GoToLineCommand}" InputGestureText="Ctrl+G"/>
+                <Separator/>
+                <MenuItem Header="_Format Code" Command="{Binding FormatCodeCommand}" InputGestureText="Ctrl+Shift+F"/>
+            </MenuItem>
+            
+            <MenuItem Header="_View" Style="{StaticResource ModernMenuItemStyle}">
+                <MenuItem Header="_Solution Explorer"/>
+                <MenuItem Header="_Output"/>
+                <MenuItem Header="_Error List"/>
+                <MenuItem Header="_Properties"/>
+                <Separator/>
+                <MenuItem Header="_Full Screen" InputGestureText="F11"/>
+            </MenuItem>
+            
+            <MenuItem Header="_Build" Style="{StaticResource ModernMenuItemStyle}">
+                <MenuItem Header="_Build Solution" Command="{Binding BuildProjectCommand}" InputGestureText="F6"/>
+                <MenuItem Header="_Rebuild Solution" InputGestureText="Ctrl+Shift+B"/>
+                <MenuItem Header="_Clean Solution" Command="{Binding CleanProjectCommand}"/>
+            </MenuItem>
+            
+            <MenuItem Header="_Debug" Style="{StaticResource ModernMenuItemStyle}">
+                <MenuItem Header="_Start Debugging" Command="{Binding DebugCodeCommand}" InputGestureText="F5"/>
+                <MenuItem Header="_Start Without Debugging" Command="{Binding RunCodeCommand}" InputGestureText="Ctrl+F5"/>
+                <MenuItem Header="_Stop Debugging" Command="{Binding StopExecutionCommand}" InputGestureText="Shift+F5"/>
+                <Separator/>
+                <MenuItem Header="_Step Over" Command="{Binding StepOverCommand}" InputGestureText="F10"/>
+                <MenuItem Header="_Step Into" Command="{Binding StepIntoCommand}" InputGestureText="F11"/>
+                <MenuItem Header="_Step Out" Command="{Binding StepOutCommand}" InputGestureText="Shift+F11"/>
+                <Separator/>
+                <MenuItem Header="_Toggle Breakpoint" Command="{Binding ToggleBreakpointCommand}" InputGestureText="F9"/>
+            </MenuItem>
+            
+            <MenuItem Header="_Tools" Style="{StaticResource ModernMenuItemStyle}">
+                <MenuItem Header="_Plugin Manager" Command="{Binding PluginManagerCommand}"/>
+                <MenuItem Header="_Settings" Command="{Binding SettingsCommand}"/>
+            </MenuItem>
+            
+            <MenuItem Header="_Help" Style="{StaticResource ModernMenuItemStyle}">
+                <MenuItem Header="_About"/>
+                <MenuItem Header="_Documentation"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Toolbar -->
+        <ToolBarTray Grid.Row="0" Margin="0,30,0,0">
+            <ToolBar>
+                <Button Command="{Binding NewFileCommand}" ToolTip="New File">
+                    <materialDesign:PackIcon Kind="FilePlus" Width="20" Height="20"/>
+                </Button>
+                <Button Command="{Binding OpenFileCommand}" ToolTip="Open File">
+                    <materialDesign:PackIcon Kind="FolderOpen" Width="20" Height="20"/>
+                </Button>
+                <Button Command="{Binding SaveFileCommand}" ToolTip="Save File">
+                    <materialDesign:PackIcon Kind="ContentSave" Width="20" Height="20"/>
+                </Button>
+                <Separator/>
+                <Button Command="{Binding RunCodeCommand}" ToolTip="Run Code">
+                    <materialDesign:PackIcon Kind="Play" Width="20" Height="20"/>
+                </Button>
+                <Button Command="{Binding DebugCodeCommand}" ToolTip="Debug Code">
+                    <materialDesign:PackIcon Kind="DebugStepInto" Width="20" Height="20"/>
+                </Button>
+                <Button Command="{Binding StopExecutionCommand}" ToolTip="Stop Execution">
+                    <materialDesign:PackIcon Kind="Stop" Width="20" Height="20"/>
+                </Button>
+                <Separator/>
+                <Button Command="{Binding StepOverCommand}" ToolTip="Step Over">
+                    <materialDesign:PackIcon Kind="DebugStepOver" Width="20" Height="20"/>
+                </Button>
+                <Button Command="{Binding StepIntoCommand}" ToolTip="Step Into">
+                    <materialDesign:PackIcon Kind="DebugStepInto" Width="20" Height="20"/>
+                </Button>
+                <Button Command="{Binding StepOutCommand}" ToolTip="Step Out">
+                    <materialDesign:PackIcon Kind="DebugStepOut" Width="20" Height="20"/>
+                </Button>
+                <Separator/>
+                <Button Command="{Binding BuildProjectCommand}" ToolTip="Build Project">
+                    <materialDesign:PackIcon Kind="Build" Width="20" Height="20"/>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel (Solution Explorer, etc.) -->
+            <TabControl Grid.Column="0" Style="{StaticResource ModernTabControlStyle}">
+                <TabItem Header="Solution Explorer">
+                    <TreeView>
+                        <TreeViewItem Header="Solution 'Monobrains' (1 project)">
+                            <TreeViewItem Header="Monobrains">
+                                <TreeViewItem Header="Properties"/>
+                                <TreeViewItem Header="References"/>
+                                <TreeViewItem Header="Program.cs"/>
+                            </TreeViewItem>
+                        </TreeViewItem>
+                    </TreeView>
+                </TabItem>
+                <TabItem Header="Class View">
+                    <TreeView>
+                        <TreeViewItem Header="Monobrains">
+                            <TreeViewItem Header="Program"/>
+                        </TreeViewItem>
+                    </TreeView>
+                </TabItem>
+            </TabControl>
+
+            <!-- Center Panel (Editor) -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Tab Headers -->
+                <TabControl Grid.Row="0" Style="{StaticResource ModernTabControlStyle}" ItemsSource="{Binding Tabs}" SelectedItem="{Binding ActiveTab}">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Title}"/>
+                                <Button Content="×" Margin="8,0,0,0" Width="20" Height="20" 
+                                        Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                        CommandParameter="{Binding}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                </TabControl>
+
+                <!-- Editor Content -->
+                <Grid Grid.Row="1">
+                    <TextBox Style="{StaticResource ModernEditorStyle}"
+                             Text="{Binding ActiveTab.Content, UpdateSourceTrigger=PropertyChanged}"
+                             CaretIndex="{Binding ActiveTab.CaretPosition}"
+                             SelectionStart="{Binding ActiveTab.SelectionStart}"
+                             SelectionLength="{Binding ActiveTab.SelectionLength}"/>
+                    
+                    <!-- Code Completion Popup -->
+                    <Popup IsOpen="{Binding ActiveTab.ShowCompletion}" PlacementTarget="{Binding ElementName=EditorTextBox}">
+                        <ListBox ItemsSource="{Binding ActiveTab.CompletionItems}" MaxHeight="200" Width="300">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Text}" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding Description}" FontSize="12" Opacity="0.7"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Popup>
+                </Grid>
+            </Grid>
+
+            <!-- Right Panel (Properties, Output, etc.) -->
+            <TabControl Grid.Column="2" Style="{StaticResource ModernTabControlStyle}">
+                <TabItem Header="Properties">
+                    <ScrollViewer>
+                        <StackPanel>
+                            <TextBlock Text="File Properties" FontWeight="Bold" Margin="5"/>
+                            <TextBlock Text="{Binding ActiveTab.FilePath}" Margin="5"/>
+                            <TextBlock Text="Language" FontWeight="Bold" Margin="5,10,5,5"/>
+                            <TextBlock Text="{Binding ActiveTab.Language}" Margin="5"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+                
+                <TabItem Header="Output">
+                    <ListBox ItemsSource="{Binding OutputMessages}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Content}" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+                
+                <TabItem Header="Error List">
+                    <ListBox ItemsSource="{Binding ActiveTab.Diagnostics}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Message}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Severity}" Opacity="0.7"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+                
+                <TabItem Header="Breakpoints">
+                    <ListBox ItemsSource="{Binding Breakpoints}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding LineNumber}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+                
+                <TabItem Header="Variables">
+                    <ListBox ItemsSource="{Binding Variables}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Value}" Opacity="0.7"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+                
+                <TabItem Header="Call Stack">
+                    <ListBox ItemsSource="{Binding CallStack}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding MethodName}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="2" Background="{DynamicResource MaterialDesignToolBarBackground}">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusText}"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Line: " Margin="0,0,5,0"/>
+                    <TextBlock Text="{Binding ActiveTab.CurrentLine}"/>
+                    <TextBlock Text=", Col: " Margin="10,0,5,0"/>
+                    <TextBlock Text="{Binding ActiveTab.CurrentColumn}"/>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

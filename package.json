@@ -1,0 +1,45 @@
+{
+  "name": "Monobrains IDE",
+  "version": "1.0.0",
+  "description": "Advanced Multi-Language Code Editor and IDE",
+  "main": "Monobrains.exe",
+  "scripts": {
+    "build": "dotnet build Monobrains.sln --configuration Release",
+    "run": "dotnet run --project Monobrains/Monobrains.csproj",
+    "clean": "dotnet clean Monobrains.sln",
+    "restore": "dotnet restore Monobrains.sln",
+    "publish": "dotnet publish Monobrains/Monobrains.csproj --configuration Release --self-contained true"
+  },
+  "keywords": [
+    "ide",
+    "editor",
+    "code",
+    "csharp",
+    "python",
+    "javascript",
+    "typescript",
+    "debugging",
+    "syntax-highlighting"
+  ],
+  "author": "Monobrains Team",
+  "license": "MIT",
+  "dependencies": {
+    "python": ">=3.9.0"
+  },
+  "devDependencies": {
+    "dotnet": ">=6.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "python": ">=3.9.0",
+    "dotnet": ">=6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/monobrains/monobrains-ide.git"
+  },
+  "bugs": {
+    "url": "https://github.com/monobrains/monobrains-ide/issues"
+  },
+  "homepage": "https://github.com/monobrains/monobrains-ide#readme"
+}
